@@ -27,8 +27,9 @@ export default class Home extends React.Component {
     render() {
         return (
             <FlatList
+                contentContainerStyle={{ flex: 1, backgroundColor: '#fff' }}
                 data={this.state.products}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item, index) => 'produs-' + index.toString()}
                 renderItem={product => {
                     return (
                         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -40,6 +41,7 @@ export default class Home extends React.Component {
                 }}
                 onRefresh={() => this.onRefresh()}
                 refreshing={this.state.isFetching}
+                numColumns={2}
             />
         )
     }

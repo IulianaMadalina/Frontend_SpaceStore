@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -61,16 +62,36 @@ class TabNav extends React.Component {
 
     render() {
         return (
-            <Tab.Navigator>
+            <Tab.Navigator barStyle={{ backgroundColor: '#7B0B7B' }}>
                 {this.state.loggedIn ?
                     <>
-                        <Tab.Screen name="Home" component={Home} />
-                        <Tab.Screen name="Profile">{props => <Profile {...props} onLogout={() => this.setState({ loggedIn: false })} />}</Tab.Screen>
+                        <Tab.Screen name="Home" component={Home} options={{
+                            tabBarLabel: 'Home',
+                            tabBarIcon: ({ color }) => (
+                                <MaterialCommunityIcons name="home" color={color} size={26} />
+                            ),
+                        }} />
+                        <Tab.Screen name="Profile" options={{
+                            tabBarLabel: 'Profile',
+                            tabBarIcon: ({ color }) => (
+                                <MaterialCommunityIcons name="account" color={color} size={26} />
+                            ),
+                        }}>{props => <Profile {...props} onLogout={() => this.setState({ loggedIn: false })} />}</Tab.Screen>
                     </>
                     :
                     <>
-                        <Tab.Screen name="Login">{props => <Login {...props} onLogin={() => { this.setState({ loggedIn: true }) }} />}</Tab.Screen>
-                        <Tab.Screen name="Register" component={Register} />
+                        <Tab.Screen name="Login" options={{
+                            tabBarLabel: 'Login',
+                            tabBarIcon: ({ color }) => (
+                                <MaterialCommunityIcons name="login" color={color} size={26} />
+                            ),
+                        }}>{props => <Login {...props} onLogin={() => { this.setState({ loggedIn: true }) }} />}</Tab.Screen>
+                        <Tab.Screen name="Register" component={Register} options={{
+                            tabBarLabel: 'Register',
+                            tabBarIcon: ({ color }) => (
+                                <MaterialCommunityIcons name="account" color={color} size={26} />
+                            ),
+                        }} />
                     </>
                 }
             </Tab.Navigator>

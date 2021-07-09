@@ -13,8 +13,6 @@ export default class Login extends React.Component {
             email: 'presadavaleriu@gmail.com',
             password: 'parola',
             showPassword: false,
-            adminSwitch: false,
-            userType: 'user',
         };
     }
 
@@ -106,24 +104,6 @@ export default class Login extends React.Component {
                             style={{ alignSelf: 'flex-end' }}>
                             <Text style={{ fontSize: 12, fontFamily: 'Muli', color: '#9914B2', marginTop: 15 }}>Dont't have an account? Register</Text>
                         </Pressable>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Switch
-                                style={{ alignSelf: 'flex-start' }}
-                                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                                thumbColor={this.state.adminSwitch ? "#9914B2" : "#f4f3f4"}
-                                onValueChange={() => {
-                                    if (this.state.userType == 'user') {
-                                        this.setState({ userType: 'admin', adminSwitch: true });
-                                    }
-                                    else {
-                                        this.setState({ userType: 'user', adminSwitch: false });
-                                    }
-                                }}
-                                value={this.state.adminSwitch}
-                            />
-                            <Text style={{}}>{this.state.userType}</Text>
-                        </View>
 
                         <Text style={{ width: '90%', fontSize: 14, fontFamily: 'Muli', color: '#292929', marginTop: '20%' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <Text style={{ fontSize: 14, fontFamily: 'Muli-Bold', color: '#292929' }}>Learn what happens when your number changes.</Text></Text>
 
