@@ -9,6 +9,9 @@ export default class Register extends React.Component {
         super();
         this.state = {
             email: 'test@test.com',
+            name:'test',
+            age:21,
+            role:'ROLE_DEFAULT',
             password: 'test',
             password1: 'test',
             showPassword: false,
@@ -18,7 +21,7 @@ export default class Register extends React.Component {
 
     register() {
         if (this.state.password == this.state.password1)
-            api.post('/ruta register', {
+            api.post('/api/publicEndpoint/register', {
                 username: '...........', //dupa ce testati backendul trebuie sa fie this.state.email
                 password: '...........', //this.state.password
             })
@@ -67,6 +70,59 @@ export default class Register extends React.Component {
                             style={{ height: 2, borderRadius: 2 }}
                         />
 
+
+
+                        <TextInput
+                            value={this.state.name}
+                            onChangeText={text => this.setState({ name: text })}
+                            placeholder={'Your name'}
+                            placeholderTextColor={'#292929'}
+                            style={{ fontSize: 14, fontFamily: 'Muli', color: '#000', marginTop: 40 }}
+                        />
+                        <LinearGradient
+                            colors={['#B5B5EC', '#9914B2', '#68114A']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={{ height: 2, borderRadius: 2 }}
+                        />
+
+
+
+                        
+
+                        <TextInput
+                            value={this.state.age}
+                            onChangeText={text => this.setState({ age: text })}
+                            placeholder={'Your age'}
+                            placeholderTextColor={'#292929'}
+                            style={{ fontSize: 14, fontFamily: 'Muli', color: '#000', marginTop: 40 }}
+                        />
+                        <LinearGradient
+                            colors={['#B5B5EC', '#9914B2', '#68114A']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={{ height: 2, borderRadius: 2 }}
+                        />
+
+
+
+
+
+                            <TextInput
+                            value={this.state.role}
+                            onChangeText={text => this.setState({ role: text })}
+                            placeholder={'Choose one of role (ROLE_DEFAULT / ROLE_ADMIN)'}
+                            placeholderTextColor={'#292929'}
+                            style={{ fontSize: 14, fontFamily: 'Muli', color: '#000', marginTop: 40 }}
+                        />
+                        <LinearGradient
+                            colors={['#B5B5EC', '#9914B2', '#68114A']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={{ height: 2, borderRadius: 2 }}
+                        />
+
+
                         <View style={{ marginTop: 20 }}>
                             <TextInput
                                 value={this.state.password}
@@ -113,7 +169,7 @@ export default class Register extends React.Component {
                             style={{ height: 2, borderRadius: 2 }}
                         />
 
-                        <Text style={{ width: '90%', fontSize: 14, fontFamily: 'Muli', color: '#292929', marginTop: '20%' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <Text style={{ fontSize: 14, fontFamily: 'Muli-Bold', color: '#292929' }}>Learn what happens when your number changes.</Text></Text>
+                        <Text style={{ width: '90%', fontSize: 14, fontFamily: 'Muli', color: '#292929', marginTop: '20%' }}>Te-ai inregistrat cu succes in aplicatia Space Store. <Text style={{ fontSize: 14, fontFamily: 'Muli-Bold', color: '#292929' }}>Learn what happens when your number changes.</Text></Text>
 
                         <View style={{ marginTop: 30 }}>
                             <Button

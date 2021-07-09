@@ -16,7 +16,7 @@ export default class Login extends React.Component {
     }
 
     login() {
-        api.post('/ruta login', {
+        api.post('/api/login', {
             username: '...........', //dupa ce testati backendul trebuie sa fie this.state.email
             password: '...........', //this.state.password
         })
