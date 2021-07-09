@@ -5,12 +5,14 @@ import Button from '../components/Button';
 export default class User extends React.Component {
     constructor(props) {
         super();
-        this.state = {
-        }
     }
 
-    componentDidMount() {
-
+    async logout() {
+        try {
+            await AsyncStorage.removeItem('user');
+        } catch (e) {
+            console.error('Error deleting user from storage');
+        }
     }
 
     render() {
@@ -19,7 +21,7 @@ export default class User extends React.Component {
                 <Text>PROFIL</Text>
                 <Button
                     text={'Logout'}
-                    onPress={() => { this.props.onLogout() }}
+                    onPress={() => { this.logout(); this.props.onLogout() }}
                 />
             </>
         )

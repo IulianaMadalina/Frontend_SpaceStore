@@ -7,6 +7,8 @@ var apiUrl = 'http://localhost:8080/api';
 api.url = apiUrl;
 api.baseUrl = apiUrl.replace('/api', '');
 
+api.token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjU4NjI0MzIsInVzZXJfbmFtZSI6InByZXNhZGF2YWxlcml1QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfQURNSU4iXSwianRpIjoiNDAwMTU1M2MtZjVjZC00MTQzLTlhYjAtNWYzZmJmNDM5M2I5IiwiY2xpZW50X2lkIjoib3ZpZGl1cyIsInNjb3BlIjpbIndlYiJdfQ.N4wszNU3w0RP2EnGr-gx_xR7wAOAvnKLIoTDYOl-u3K3-E2wN5IFLMCw1BwVKMT9AyxrLLieCFqhFNAVQcPFTU6HdG_QfOsBPzKhC9dpkax-1uzgTfoI-3EtSHY_PMn5FA26J_HQMjCawrW05UAJZE_vhrwljISCK-urmJXyH_dUOAR5McChYc9KUWXhKzH350zffzW0GbUzZ7hB6_o-osVHQC6Y1zfVZ8WAeoFexfjoqRNyJRjhtGsDpFDnO4ElnymzmoWE3QflkNT0jJ8NRvZ0wvv7A589U8n5n4ZH8mcFnhj51qwyxIlYrpgmxsOWQzE2iO1Irc_xTqVjHf5yRA";
+
 api.post = (url, data) => {
     return api.request('POST', url, data);
 };
@@ -20,49 +22,50 @@ api.request = (method, url, data) => {
     return new Promise((resolve, reject) => {
         method = method.toUpperCase();
         url = apiUrl + url;
+        console.log('url: ', url);
         let headers = {};
-        if (apiAuth && apiAuth.logged && apiAuth.token) {
-            headers = api.oauth.authorizationHeader(apiAuth.token);
-        }
+        // if (apiAuth && apiAuth.logged && apiAuth.token) {
+        //     headers = api.oauth.authorizationHeader(apiAuth.token);
+        // }
         headers['Content-Type'] = 'application/json';
-        headers['APP'] = '2';
-        
+        headers['Authorization'] = `Bearer ${api.token}`;
+
         api.sendRequest(method, url, headers, data)
-        .then(response => {
-            resolve(response);
-        })
-        .catch(response => {
-            if (response.status === 401) {
-                // Token expired. Refresh the token
-                if (newTokenInProgress === true) {
-                    reject(response);
-                    return false;
-                }
-                newTokenInProgress = true;
-                api.oauth.refreshToken(apiAuth)
-                .then(auth => {
-                    // Refresh success !
-                    // try the current request again
-                    newTokenInProgress = false;
-                    headers = {};
-                    if (auth.logged && auth.token) {
-                        headers = api.oauth.authorizationHeader(auth.token);
+            .then(response => {
+                resolve(response);
+            })
+            .catch(response => {
+                if (response.status === 401) {
+                    // Token expired. Refresh the token
+                    if (newTokenInProgress === true) {
+                        reject(response);
+                        return false;
                     }
-                    headers['Content-Type'] = 'application/json';
-                    api.sendRequest(method, url, headers, data)
-                    .then(response => resolve(response))
-                    .catch(response => reject(response));
-                })
-                .catch(response => {
-                    // Could not refresh. Could be network or server error, or expired refresh token
-                    newTokenInProgress = false;
-                    api.oauth.updateAuth({ logged: false });
+                    newTokenInProgress = true;
+                    api.oauth.refreshToken(apiAuth)
+                        .then(auth => {
+                            // Refresh success !
+                            // try the current request again
+                            newTokenInProgress = false;
+                            headers = {};
+                            if (auth.logged && auth.token) {
+                                headers = api.oauth.authorizationHeader(auth.token);
+                            }
+                            headers['Content-Type'] = 'application/json';
+                            api.sendRequest(method, url, headers, data)
+                                .then(response => resolve(response))
+                                .catch(response => reject(response));
+                        })
+                        .catch(response => {
+                            // Could not refresh. Could be network or server error, or expired refresh token
+                            newTokenInProgress = false;
+                            api.oauth.updateAuth({ logged: false });
+                            reject(response);
+                        });
+                } else {
                     reject(response);
-                });
-            } else {
-                reject(response);
-            }
-        });
+                }
+            });
     });
 };
 
@@ -76,14 +79,14 @@ api.sendRequest = (method, url, headers, data) => {
         };
         if (method == 'GET') options.params = data;
         else options.data = data;
-        
+
         axios(options)
-        .then(response => {
-            resolve(response);
-        })
-        .catch(({ response }) => {
-            resolve(response);
-        });
+            .then(response => {
+                resolve(response);
+            })
+            .catch(({ response }) => {
+                resolve(response);
+            });
     });
 };
 
@@ -91,7 +94,7 @@ api.sendRequest = (method, url, headers, data) => {
 api.oauth = {};
 
 api.oauth.logout = () => {
-    api.oauth.updateAuth({logged: false});
+    api.oauth.updateAuth({ logged: false });
     emitter.emit('auth', 'logout');
 };
 
@@ -139,21 +142,21 @@ api.oauth.check = () => {
             }
             newTokenInProgress = true;
             api.oauth.refreshToken(auth)
-            .then(response => {
-                // Refresh success !
-                newTokenInProgress = false;
-                resolve(response);
-            })
-            .catch(response => {
-                // Could not refresh. Could be network or server error, or expired refresh token
-                if (response.message) {
-                    emitter.emit('appNotification', {title: 'Error', desc: response.message});
-                }
-                newTokenInProgress = false;
-                return returnNotLogged();
-            });
+                .then(response => {
+                    // Refresh success !
+                    newTokenInProgress = false;
+                    resolve(response);
+                })
+                .catch(response => {
+                    // Could not refresh. Could be network or server error, or expired refresh token
+                    if (response.message) {
+                        emitter.emit('appNotification', { title: 'Error', desc: response.message });
+                    }
+                    newTokenInProgress = false;
+                    return returnNotLogged();
+                });
         };
-        
+
         // Get authentication data from the local database
         AsyncStorage.getItem('auth').then(authString => {
             let auth = JSON.parse(authString);
@@ -165,24 +168,24 @@ api.oauth.check = () => {
                 } else {
                     // Token is not expired, but check it on the server
                     api.oauth.checkRemote(auth.token)
-                    .then(response => {
-                        if (response.logged === true) {
-                            // Token is valid. Update auth data and return
-                            api.oauth.updateAuth({
-                                logged: true,
-                                user: response.user,
-                                token: auth.token,
-                            });
-                            resolve(apiAuth);
-                        } else {
-                            // Server says token is not valid. Can be expired. Refresh token
-                            return returnRefreshToken(auth);
-                        }
-                    })
-                    .catch(response => {
-                        // Could not check the token. Could be network or server error
-                        resolve(auth);
-                    });
+                        .then(response => {
+                            if (response.logged === true) {
+                                // Token is valid. Update auth data and return
+                                api.oauth.updateAuth({
+                                    logged: true,
+                                    user: response.user,
+                                    token: auth.token,
+                                });
+                                resolve(apiAuth);
+                            } else {
+                                // Server says token is not valid. Can be expired. Refresh token
+                                return returnRefreshToken(auth);
+                            }
+                        })
+                        .catch(response => {
+                            // Could not check the token. Could be network or server error
+                            resolve(auth);
+                        });
                 }
             } else {
                 // I was not logged in
@@ -199,25 +202,25 @@ api.oauth.check = () => {
 api.oauth.refreshToken = auth => {
     return new Promise((resolve, reject) => {
         api.oauth.refreshRemote(auth.token.refresh_token)
-        .then(response => {
-            if (response.success === true) {
-                // Got a fresh new token. Save it and return
-                let new_processed_token = api.oauth.processNewToken(response.token);
-                api.oauth.updateAuth({
-                    logged: true,
-                    user: response.user,
-                    token: new_processed_token,
-                });
-                resolve(apiAuth);
-            } else {
-                // Refresh Token is expired.
+            .then(response => {
+                if (response.success === true) {
+                    // Got a fresh new token. Save it and return
+                    let new_processed_token = api.oauth.processNewToken(response.token);
+                    api.oauth.updateAuth({
+                        logged: true,
+                        user: response.user,
+                        token: new_processed_token,
+                    });
+                    resolve(apiAuth);
+                } else {
+                    // Refresh Token is expired.
+                    reject(response);
+                }
+            })
+            .catch(response => {
+                // Could not refresh. Could be network or server error
                 reject(response);
-            }
-        })
-        .catch(response => {
-            // Could not refresh. Could be network or server error
-            reject(response);
-        });
+            });
     });
 };
 
@@ -226,16 +229,16 @@ api.oauth.checkRemote = token => {
     return new Promise((resolve, reject) => {
         api.sendRequest(
             'GET',
-            apiUrl + '/user/check',
+            apiUrl + '/oauth/token',
             api.oauth.authorizationHeader(token),
             {}
         )
-        .then(response => {
-            resolve(response.data);
-        })
-        .catch(response => {
-            reject(response);
-        });
+            .then(response => {
+                resolve(response.data);
+            })
+            .catch(response => {
+                reject(response);
+            });
     });
 };
 
@@ -248,12 +251,12 @@ api.oauth.refreshRemote = refresh_token => {
             {},
             { refresh_token: refresh_token }
         )
-        .then(response => {
-            resolve(response.data);
-        })
-        .catch(response => {
-            reject(response);
-        });
+            .then(response => {
+                resolve(response.data);
+            })
+            .catch(response => {
+                reject(response);
+            });
     });
 };
 export default api;

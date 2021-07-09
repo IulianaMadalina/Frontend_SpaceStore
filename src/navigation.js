@@ -3,6 +3,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -37,9 +38,31 @@ class TabNav extends React.Component {
         }
     }
 
+    async componentDidMount() {
+        const user = await this.getUser();
+        if (user) {
+            alert('gasit user');
+            this.setState({ loggedIn: true });
+        }
+    }
+
+    async getUser() {
+        try {
+            const user = await AsyncStorage.getItem('user');
+            if (user) {
+                return user;
+            }
+            else
+                return null;
+        } catch (e) {
+            console.error('Error reading from storage');
+            return null;
+        }
+    }
+
     render() {
         return (
-            <Tab.Navigator>
+            <Tab.Navigator initialRouteName='Home'>
                 {this.state.loggedIn ?
                     <>
                         <Tab.Screen name="Profile">{props => <Profile {...props} onLogout={() => this.setState({ loggedIn: false })} />}</Tab.Screen>

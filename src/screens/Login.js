@@ -18,23 +18,9 @@ export default class Login extends React.Component {
         };
     }
 
-    async getUser() {
+    async storeUser() {
         try {
-            const user = await AsyncStorage.getItem('user');
-            if (user) {
-                return user;
-            }
-            else
-                return null;
-        } catch (e) {
-            console.error('Error reading from storage');
-            return null;
-        }
-    }
-
-    async storeUser(user) {
-        try {
-            const jsonValue = JSON.stringify(user)
+            const jsonValue = JSON.stringify({ email: this.state.email, password: this.state.password })
             await AsyncStorage.setItem('user', jsonValue)
         } catch (e) {
             console.error('Error writing to storage');
@@ -42,23 +28,22 @@ export default class Login extends React.Component {
     }
 
     async login() {
-        const user = await this.getUser();
-        alert('tip user: ' + JSON.stringify(user));
-        if (user)
-            this.props.navigation.navigate('Home');
-        else {
-            api.post('/api/login', {
-                username: this.state.email,
-                password: this.state.password,
+        api.post('/login', {
+            email: this.state.email,
+            password: this.state.password,
+        })
+            .then(response => {
+                console.log('response login: ', response);
+                if (response.data) {
+                    this.storeUser();
+                    this.props.navigation.navigate('Home');
+                    this.props.onLogin();
+                }
             })
-                .then(response => {
-                    console.log('response login: ', response);
-                })
-                .catch(error => {
-                    console.error(e);
-                    alert(JSON.stringify(error.message));
-                })
-        }
+            .catch(error => {
+                console.error(e);
+                alert(JSON.stringify(error.message));
+            })
     }
 
     render() {
@@ -145,7 +130,7 @@ export default class Login extends React.Component {
                         <View style={{ marginTop: 30 }}>
                             <Button
                                 text={'Login'}
-                                onPress={() => { this.props.onLogin() }}
+                                onPress={() => { this.login() }}
                             />
                         </View>
                     </View>

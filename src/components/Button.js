@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-export default class MainButton extends React.Component {
+export default class Button extends React.Component {
     constructor(props) {
         super();
     }
