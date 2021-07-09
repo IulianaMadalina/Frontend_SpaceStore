@@ -41,7 +41,6 @@ class TabNav extends React.Component {
     async componentDidMount() {
         const user = await this.getUser();
         if (user) {
-            alert('gasit user');
             this.setState({ loggedIn: true });
         }
     }
@@ -62,11 +61,11 @@ class TabNav extends React.Component {
 
     render() {
         return (
-            <Tab.Navigator initialRouteName='Home'>
+            <Tab.Navigator>
                 {this.state.loggedIn ?
                     <>
-                        <Tab.Screen name="Profile">{props => <Profile {...props} onLogout={() => this.setState({ loggedIn: false })} />}</Tab.Screen>
                         <Tab.Screen name="Home" component={Home} />
+                        <Tab.Screen name="Profile">{props => <Profile {...props} onLogout={() => this.setState({ loggedIn: false })} />}</Tab.Screen>
                     </>
                     :
                     <>
