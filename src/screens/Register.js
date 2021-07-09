@@ -9,9 +9,9 @@ export default class Register extends React.Component {
         super();
         this.state = {
             email: 'test@test.com',
-            name:'test',
-            age:21,
-            role:'ROLE_DEFAULT',
+            name: 'test',
+            age: 21,
+            role: 'ROLE_DEFAULT',
             password: 'test',
             password1: 'test',
             showPassword: false,
@@ -39,7 +39,7 @@ export default class Register extends React.Component {
 
     render() {
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+            <>
                 <StatusBar animated backgroundColor='#fff' barStyle={'dark-content'} />
                 <ScrollView>
                     <View style={{ flexDirection: 'row', alignItems: 'center', overflow: 'hidden', marginTop: 10 }}>
@@ -88,7 +88,7 @@ export default class Register extends React.Component {
 
 
 
-                        
+
 
                         <TextInput
                             value={this.state.age}
@@ -108,7 +108,7 @@ export default class Register extends React.Component {
 
 
 
-                            <TextInput
+                        <TextInput
                             value={this.state.role}
                             onChangeText={text => this.setState({ role: text })}
                             placeholder={'Choose one of role (ROLE_DEFAULT / ROLE_ADMIN)'}
@@ -179,7 +179,7 @@ export default class Register extends React.Component {
                         </View>
                     </View>
                 </ScrollView>
-            </SafeAreaView>
+            </>
         )
     }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, View, Text, TextInput, Pressable, StatusBar } from 'react-native';
+import { ScrollView, View, Text, TextInput, Pressable, StatusBar, Switch } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import api from '../api';
 import Button from '../components/Button';
@@ -9,24 +10,55 @@ export default class Login extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            email: 'test@test.com',
-            password: 'test',
+            email: 'presadavaleriu@gmail.com',
+            password: 'parola',
             showPassword: false,
+            adminSwitch: false,
+            userType: 'user',
         };
     }
 
-    login() {
-        api.post('/api/login', {
-            username: '...........', //dupa ce testati backendul trebuie sa fie this.state.email
-            password: '...........', //this.state.password
-        })
-            .then(response => {
-                console.log('response login: ', response);
-                this.props.navigation.navigate('Home');
+    async getUser() {
+        try {
+            const user = await AsyncStorage.getItem('user');
+            if (user) {
+                return user;
+            }
+            else
+                return null;
+        } catch (e) {
+            console.error('Error reading from storage');
+            return null;
+        }
+    }
+
+    async storeUser(user) {
+        try {
+            const jsonValue = JSON.stringify(user)
+            await AsyncStorage.setItem('user', jsonValue)
+        } catch (e) {
+            console.error('Error writing to storage');
+        }
+    }
+
+    async login() {
+        const user = await this.getUser();
+        alert('tip user: ' + JSON.stringify(user));
+        if (user)
+            this.props.navigation.navigate('Home');
+        else {
+            api.post('/api/login', {
+                username: this.state.email,
+                password: this.state.password,
             })
-            .catch(error => {
-                alert(JSON.stringify(error.message));
-            })
+                .then(response => {
+                    console.log('response login: ', response);
+                })
+                .catch(error => {
+                    console.error(e);
+                    alert(JSON.stringify(error.message));
+                })
+        }
     }
 
     render() {
@@ -89,6 +121,24 @@ export default class Login extends React.Component {
                             style={{ alignSelf: 'flex-end' }}>
                             <Text style={{ fontSize: 12, fontFamily: 'Muli', color: '#9914B2', marginTop: 15 }}>Dont't have an account? Register</Text>
                         </Pressable>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Switch
+                                style={{ alignSelf: 'flex-start' }}
+                                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                                thumbColor={this.state.adminSwitch ? "#9914B2" : "#f4f3f4"}
+                                onValueChange={() => {
+                                    if (this.state.userType == 'user') {
+                                        this.setState({ userType: 'admin', adminSwitch: true });
+                                    }
+                                    else {
+                                        this.setState({ userType: 'user', adminSwitch: false });
+                                    }
+                                }}
+                                value={this.state.adminSwitch}
+                            />
+                            <Text style={{}}>{this.state.userType}</Text>
+                        </View>
 
                         <Text style={{ width: '90%', fontSize: 14, fontFamily: 'Muli', color: '#292929', marginTop: '20%' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <Text style={{ fontSize: 14, fontFamily: 'Muli-Bold', color: '#292929' }}>Learn what happens when your number changes.</Text></Text>
 
